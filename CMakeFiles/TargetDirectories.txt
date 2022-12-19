@@ -1,0 +1,3 @@
+/home/krunal/software/MatlabLR/CMakeFiles/rebuild_cache.dir
+/home/krunal/software/MatlabLR/CMakeFiles/edit_cache.dir
+/home/krunal/software/MatlabLR/CMakeFiles/matlab-lrspline.dir

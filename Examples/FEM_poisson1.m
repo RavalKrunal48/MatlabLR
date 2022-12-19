@@ -8,9 +8,9 @@
 %
 %                  f = 1 everywhere
 %
-clc;clear;
-% addpath('../lib');
 
+% addpath('../lib');
+clc; clear;
 % specify the geometry
 p = [2,2];
 controlpoints = [0,0; .5,  0; 1,0;
@@ -28,10 +28,7 @@ lr.refine();
 
 % perform local refinement
 for i=1:3
-  element_index = lr.getElementContaining(0.5, 0.5);
-  basis_index   = lr.support{element_index};
-  lr.localRaiseOrder(basis_index, 'basis')
-  element_index = lr.getElementContaining(0.5, 0.5);
+  element_index = lr.getElementContaining(0.05, 0.05);
   basis_index   = lr.support{element_index};
   lr.refine(basis_index, 'basis');
 end
@@ -39,9 +36,6 @@ end
 % plot mesh for debugging purposes
 figure;
 lr.plot();
-lr
-figure;
-lr.plot('enumeration');
 
 nel  = size(lr.elements,1); % number of elements
 nfun = size(lr.knots,1);    % number of basis functions
@@ -98,7 +92,7 @@ for e=1:nel % for all elements
 end
 
 % add boundary conditions
-e = lr.getEdge()
+e = lr.getEdge(0,1)
 A(e,:) = 0;
 A(:,e) = 0;
 A(e,e) = eye(numel(e));

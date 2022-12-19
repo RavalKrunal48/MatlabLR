@@ -1,47 +1,39 @@
-% sample program to solve to poisson equation using the finite element method
-% as a source term we simply use f=1 and we use homogenuous dirichlet boundary
-% conditions on all edges
-%
-% the equations are
-%          nabla^2 u = f in \Omega
-%                  u = 0 on \partial \Omega
-%
-%                  f = 1 everywhere
-%
-clc;clear;
-% addpath('../lib');
-
-% specify the geometry
+clc; clear;
 p = [2,2];
 controlpoints = [0,0; .5,  0; 1,0;
-                 0,2; .5,1.5; 1,1;
-                 2,2;  2,1.5; 2,1]';
+                 0,.5; .5,.5; 1,.5;
+                 0,1;  .5,1; 1,1]';
 knot1 = [0,0,0,1,1,1];
 knot2 = [0,0,0,1,1,1];
-
-% establish LRSpline object
 lr = LRSplineSurface(p, knot1, knot2, controlpoints);
 
 % perform tensor product refinement
-lr.refine();
-lr.refine();
-
+% lr.refine();
+% lr.refine();
+basis_index = [];
 % perform local refinement
-for i=1:3
-  element_index = lr.getElementContaining(0.5, 0.5);
-  basis_index   = lr.support{element_index};
-  lr.localRaiseOrder(basis_index, 'basis')
-  element_index = lr.getElementContaining(0.5, 0.5);
-  basis_index   = lr.support{element_index};
+for i=0
+  element_index = lr.getElementContaining(0.25, 0.25);
+  basis_index1   = lr.support{element_index};
+  element_index = lr.getElementContaining(0.75, 0.25);
+  basis_index2   = lr.support{element_index};
+  element_index = lr.getElementContaining(0.25, 0.75);
+  basis_index3   = lr.support{element_index};
+  element_index = lr.getElementContaining(0.75, 0.75);
+  basis_index4   = lr.support{element_index};
+  basis_index   = [basis_index basis_index1 basis_index2 basis_index3 basis_index4] 
   lr.refine(basis_index, 'basis');
+
 end
+figure;
+% lr.plot('basis');
+% lr.localRaiseOrder(basis_index, 'basis')
 
 % plot mesh for debugging purposes
-figure;
+% figure;
+% lr.plot('enumerate');
+print(lr)
 lr.plot();
-lr
-figure;
-lr.plot('enumeration');
 
 nel  = size(lr.elements,1); % number of elements
 nfun = size(lr.knots,1);    % number of basis functions
@@ -67,6 +59,7 @@ for e=1:nel % for all elements
   Ak = zeros(n);     % local stiffness matrix
   bk = zeros(n,1);   % local load vector
 
+  m = 2;
   for i=1:ng % for all gauss points
     for j=1:ng
       u  = u0 + (xg(i)+1)/2 * (u1-u0); % parametric evaluation point (u,v)
@@ -83,11 +76,11 @@ for e=1:nel % for all elements
         for l=1:n
           Ak(k,l) = Ak(k,l) + dNdx(:,k)' * dNdx(:,l);
         end
-        bk(k) = bk(k) + N(1,k)*1;
+%         bk(k) = bk(k) + N(1,k)*1;
       end
       %%% Optimization note (replace nested for-loops above):
-      % Ak = dNdx' * dNdx;
-      % bk = N(1,:)';
+%       Ak = dNdx' * dNdx
+      bk = N(1,:)'*(-m.^2.*pi.^2.*sin(m*pi*u).*sin(m*pi*v)-m.^2.*pi.^2.*sin(m*pi*u).*sin(m*pi*v));
 
       % assemble contributions into global system matrix
       detJw = (u1-u0)*(v1-v0)/4*det(Jt)*wg(i)*wg(j); % weights and mapping contribution
@@ -98,11 +91,12 @@ for e=1:nel % for all elements
 end
 
 % add boundary conditions
-e = lr.getEdge()
+e = lr.getEdge(0)
 A(e,:) = 0;
 A(:,e) = 0;
 A(e,e) = eye(numel(e));
 b(e)   = 0;
+
 
 % solve system
 u = A \ b;

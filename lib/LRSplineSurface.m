@@ -631,7 +631,7 @@ classdef LRSplineSurface < handle
 			end
 
 			if edge == 0
-				index = []
+				index = [];
 				for edg=1:4
 					if elements
 						index = [index; lrsplinesurface_interface('get_edge_elements', this.objectHandle, edg)];
@@ -639,7 +639,7 @@ classdef LRSplineSurface < handle
 						index = [index; lrsplinesurface_interface('get_edge_functions', this.objectHandle, edg, depth)];
 					end
 				end
-				index = unique(index)
+				index = unique(index);
 			else
 				if elements
 					index = lrsplinesurface_interface('get_edge_elements', this.objectHandle, edge);

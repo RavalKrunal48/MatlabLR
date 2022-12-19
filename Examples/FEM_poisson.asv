@@ -98,7 +98,7 @@ for e=1:nel % for all elements
 end
 
 % add boundary conditions
-e = lr.getEdge()
+e = lr.getEdge();
 A(e,:) = 0;
 A(:,e) = 0;
 A(e,e) = eye(numel(e));
