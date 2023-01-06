@@ -45,8 +45,8 @@ Convergence_rates = struct( ...
 syms x y
 a = 1;
 b = 2*pi;
-% u(x,y) = sin (b*y); 
-u(x,y) = exp (a*x) .* sin (b*y); 
+u(x,y) = sin (b*y); 
+% u(x,y) = exp (a*x) .* sin (b*y); 
 main_make_exact_solution;
 
 main_init;

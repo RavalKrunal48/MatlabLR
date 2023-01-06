@@ -83,9 +83,6 @@ edges     = [];
 edgVal    = [];
 
 disp('%%%%%%%%%%%%%%%% Extracting Neumann Boundary Edges %%%%%%%%%%%%%%%%')
-% lr.plot('enumeration');
-% edgesall  = lr.getEdge(0)
-
 for iedge = 1:4
   edge_el{iedge} = lr.getEdge(iedge,'elements');
   edge{iedge}  = lr.getEdge(iedge)
@@ -98,8 +95,6 @@ for iel = 1:length(edge_el{iedge})
   el_dv = lr.elements(el,4) - lr.elements(el,2);
   [yg wyg] = GaussLegendre(gauss_n(2));
   vg = (yg+1)/2.0*el_dv + lr.elements(el,2);
-  %% all functions on this element and on this edge
-  % ind = intersect(lr.support{el},edge{iedge})
   ind = lr.support{el};
   nmnn_ind = [nmnn_ind; edge{iedge}];
 
@@ -126,7 +121,6 @@ for iel = 1:length(edge_el{iedge})
   el_dv = lr.elements(el,4) - lr.elements(el,2);
   [yg wyg] = GaussLegendre(gauss_n(2));
   vg = (yg+1)/2.0*el_dv + lr.elements(el,2);
-  %% all functions on this element and on this edge
   ind = lr.support{el};
   nmnn_ind = [nmnn_ind; edge{iedge}];
 
@@ -145,43 +139,10 @@ for iel = 1:length(edge_el{iedge})
     b(ind) = b(ind) + N'*h(1) * detJw;
   end
 end
-b
-% return
-
-% iedge = 4
-% for iel = 1:length(edge_el{iedge})
-%   el = edge_el{iedge}(iel);
-%   el_du = lr.elements(el,3) - lr.elements(el,1);
-%   [xg wxg] = GaussLegendre(gauss_n(1));
-%   ug = (xg+1)/2.0*el_du + lr.elements(el,1);
-%   %% all functions on this element and on this edge
-%   ind = lr.support{el};
-%   nmnn_ind = [nmnn_ind ind];
-
-%   for gauss_j=1:gauss_n(2)
-%     N     = lr.computeBasis(ug(gauss_i),1, 1);
-%     x     = lr.point(ug(gauss_i),1, 1);
-%     Jt    = x(:,2:3);
-%     x     = x(:,1);
-%     dNdu  = N(2:3,:);
-%     N     = N(1,:);
-%     dNdx  = inv(Jt) * dNdu;
-%     detJw = det(Jt)*wxg(gauss_i)* el_du/ 2.0;
-
-  
-%     h = Exact_solution.grad_u(x(1), x(2))*(1);
-    
-%     if lr.elements(el,1) >= 0.5    
-%       b(ind) = b(ind) + N'*h(2) * detJw;
-%     else
-%       b(ind) = b(ind) + N'*h(1) * detJw;
-%     end
-%   end
-% end
 
 traction = traction + b
 nmnn_ind = unique(nmnn_ind)
-% 
+ 
 disp('%%%%%%%%%%%%%%%% Extracting Dirichlet Boundary Edges %%%%%%%%%%%%%%%%')
 % Dirichlet BC at edge-3
 edgVal3 = zeros(size(edge{3}))
@@ -197,9 +158,6 @@ edgVal    = edgVal(i);
 if numel(edges)>0
   traction = traction - A(:,edges)*edgVal;
 end
-traction
-% return
-
 
 %%% remove boundary DOFs from the system
 A(:,edges)             = [];
@@ -215,30 +173,3 @@ F  = @(u) dF(u)*u - bodyForce;
 if Problem.Static
   F = @(u) F(u) - traction;
 end
-
-
-% iedge = 3
-% for iel = 1:length(edge_el{iedge})
-%   el = edge_el{iedge}(iel);
-%   el_du = lr.elements(el,3) - lr.elements(el,1);
-%   [xg wxg] = GaussLegendre(gauss_n(1));
-%   ug = (xg+1)/2.0*el_du + lr.elements(el,1);
-%   %% all functions on this element and on this edge
-%   ind = lr.support{el};
-
-%   for gauss_j=1:gauss_n(2)
-%     N     = lr.computeBasis(ug(gauss_i),0, 1);
-%     x     = lr.point(ug(gauss_i),0, 1);
-%     Jt    = x(:,2:3);
-%     x     = x(:,1);
-%     dNdu  = N(2:3,:);
-%     N     = N(1,:);
-%     dNdx  = inv(Jt) * dNdu;
-%     detJw = det(Jt)*wxg(gauss_i)* el_du/ 2.0;
-    
-%     h = Exact_solution.grad_u(x(1), x(2))*(-1);
-    
-%     % b(ind) = b(ind) + N(ind)'*h(1) * detJw
-%     b(ind) = b(ind) + N'*h(2) * detJw;
-%   end
-% end

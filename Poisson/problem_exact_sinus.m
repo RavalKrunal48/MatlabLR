@@ -38,8 +38,8 @@ Problem = struct(...
 
 Convergence_rates = struct( ...
 'uniform',      true,       ...
-'p_values',      1,       ...
-'iterations',    9);
+'p_values',      5,       ...
+'iterations',    8);
 
 
 mycolormap = [0 0.4470 0.7410
@@ -94,7 +94,7 @@ if exist('Convergence_rates')
 % mrk_fn20_u_H1_norm_squared = find( function_velocity_error_H1_squared >= prctile(function_velocity_error_H1_squared, [Problem.Mark_Param]));
 mrk_basis = find( function_velocity_error_H1_squared >= (1-Problem.Mark_Param)*max(function_velocity_error_H1_squared));
 
-figure; lr.surf(u);          title('u'); colormap('turbo');
+% figure; lr.surf(u);          title('u'); colormap('turbo');
 figure; lr.surf(lr.p(:,1)); axis off;
 title('polynomial degree'); 
 % colorbar; 
